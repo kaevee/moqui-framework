@@ -2464,6 +2464,5 @@ class ScreenRenderImpl implements ScreenRender {
 
         // for (Map info in menuDataList) logger.warn("menu data item: ${info}")
         return menuDataList
-        return menuDataList
     }
 }
