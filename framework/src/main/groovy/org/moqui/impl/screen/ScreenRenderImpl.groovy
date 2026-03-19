@@ -2299,6 +2299,20 @@ class ScreenRenderImpl implements ScreenRender {
         UrlInstance fullUrlInstance = fullUrlInfo.getInstance(this, null)
         if (!fullUrlInstance.isPermitted()) { ec.web.sendJsonError(403, "View not permitted for path ${pathNameList}", null); return null }
 
+        String qvt2PathNormalized = qvt2Path != null ? qvt2Path.trim() : ""
+        String screenMountedPathNormalized = screenMountedPath != null ? screenMountedPath.trim() : ""
+        if (qvt2PathNormalized.startsWith("/")) qvt2PathNormalized = qvt2PathNormalized.substring(1)
+        if (qvt2PathNormalized.endsWith("/")) qvt2PathNormalized = qvt2PathNormalized.substring(0, qvt2PathNormalized.length() - 1)
+        if (screenMountedPathNormalized.startsWith("/")) screenMountedPathNormalized = screenMountedPathNormalized.substring(1)
+        if (screenMountedPathNormalized.endsWith("/")) screenMountedPathNormalized = screenMountedPathNormalized.substring(0, screenMountedPathNormalized.length() - 1)
+        boolean rewriteMountedPath = qvt2PathNormalized.length() > 0 && screenMountedPathNormalized.length() > 0
+        String rewriteFromPrefix = rewriteMountedPath ? "/" + screenMountedPathNormalized : ""
+        String rewriteToPrefix = rewriteMountedPath ? "/" + qvt2PathNormalized : ""
+        Closure<String> rewriteMountedPathFn = { String inPath ->
+            if (!rewriteMountedPath || inPath == null || !inPath.startsWith(rewriteFromPrefix)) return inPath
+            return rewriteToPrefix + inPath.substring(rewriteFromPrefix.length())
+        }
+
         ArrayList<String> fullPathList = fullUrlInfo.fullPathNameList
         int fullPathSize = fullPathList.size()
         ArrayList<String> extraPathList = fullUrlInfo.extraPathNameList
@@ -2371,10 +2385,8 @@ class ScreenRenderImpl implements ScreenRender {
                     image = buildUrl(image).url
 
                 boolean active = (nextItem == subscreensItem.name)
-                if (qvt2Path != null && qvt2Path != "" && screenPath.startsWith("/"+screenMountedPath)) {
-                    screenPath = screenPath.replaceFirst(screenMountedPath, qvt2Path)
-                    pathWithParams = pathWithParams.replaceFirst(screenMountedPath, qvt2Path)
-                }
+                screenPath = rewriteMountedPathFn(screenPath)
+                pathWithParams = rewriteMountedPathFn(pathWithParams)
                 Map itemMap = [name:subscreensItem.name, title:ec.resource.expand(subscreensItem.menuTitle, ""),
                                path:screenPath, pathWithParams:pathWithParams, image:image, imageType:imageType]
                 if (subscreensItem.menuInclude) itemMap.menuInclude = true
@@ -2397,10 +2409,8 @@ class ScreenRenderImpl implements ScreenRender {
                 image = buildUrl(image).url
             String menuTitle = ec.l10n.localize(curSsi.menuTitle) ?: curScreen.getDefaultMenuName()
 
-            if (qvt2Path != null && qvt2Path != "" && curScreenPath.startsWith("/"+screenMountedPath)) {
-                curScreenPath = curScreenPath.replaceFirst(screenMountedPath, qvt2Path)
-                curPathWithParams = curPathWithParams.replaceFirst(screenMountedPath, qvt2Path)
-            }
+            curScreenPath = rewriteMountedPathFn(curScreenPath)
+            curPathWithParams = rewriteMountedPathFn(curPathWithParams)
 
             menuDataList.add([name:pathItem, title:menuTitle, subscreens:subscreensList, path:curScreenPath,
                     pathWithParams:curPathWithParams, hasTabMenu:curScreen.hasTabMenu(), renderModes:curScreen.renderModes, image:image, imageType:imageType])
@@ -2452,10 +2462,8 @@ class ScreenRenderImpl implements ScreenRender {
             for (int i = 0; i < extraPathListSize; i++) extraPathList.set(i, StringUtilities.urlEncodeIfNeeded((String) extraPathList.get(i)))
         }
         String lastPathWithParams = currentPath.toString()
-        if (qvt2Path != null && qvt2Path != "" && lastPath.startsWith("/"+screenMountedPath)) {
-            lastPath = lastPath.replaceFirst(screenMountedPath, qvt2Path)
-            lastPathWithParams = lastPathWithParams.replaceFirst(screenMountedPath, qvt2Path)
-        }
+        lastPath = rewriteMountedPathFn(lastPath)
+        lastPathWithParams = rewriteMountedPathFn(lastPathWithParams)
         Map lastMap = [name:lastPathItem, title:lastTitle, path:lastPath, pathWithParams:lastPathWithParams,
                 image:lastImage, imageType:lastImageType, extraPathList:extraPathList, screenDocList:screenDocList,
                 renderModes:fullUrlInfo.targetScreen.renderModes, savedFinds:savedFindsList]
