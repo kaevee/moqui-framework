@@ -2309,8 +2309,11 @@ class ScreenRenderImpl implements ScreenRender {
         String rewriteFromPrefix = rewriteMountedPath ? "/" + screenMountedPathNormalized : ""
         String rewriteToPrefix = rewriteMountedPath ? "/" + qvt2PathNormalized : ""
         Closure<String> rewriteMountedPathFn = { String inPath ->
-            if (!rewriteMountedPath || inPath == null || !inPath.startsWith(rewriteFromPrefix)) return inPath
-            return rewriteToPrefix + inPath.substring(rewriteFromPrefix.length())
+            if (!rewriteMountedPath || inPath == null) return inPath
+            if (inPath == rewriteFromPrefix) return rewriteToPrefix
+            if (inPath.startsWith(rewriteFromPrefix + "/") || inPath.startsWith(rewriteFromPrefix + "?") || inPath.startsWith(rewriteFromPrefix + "#"))
+                return rewriteToPrefix + inPath.substring(rewriteFromPrefix.length())
+            return inPath
         }
 
         ArrayList<String> fullPathList = fullUrlInfo.fullPathNameList
