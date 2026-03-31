@@ -16,6 +16,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.platform.suite.api.SelectClasses
 import org.junit.platform.suite.api.Suite
 import org.moqui.Moqui
+import org.moqui.impl.screen.ScreenRenderImplPathRewriteTests
 
 // for JUnit Platform Suite annotations see: https://junit.org/junit5/docs/current/api/org.junit.platform.suite.api/org/junit/platform/suite/api/package-summary.html
 // for JUnit 5 Jupiter annotations see: https://junit.org/junit5/docs/current/user-guide/index.html#writing-tests-annotations
@@ -24,7 +25,8 @@ import org.moqui.Moqui
 @SelectClasses([ CacheFacadeTests.class, EntityCrud.class, EntityFindTests.class, EntityNoSqlCrud.class,
         L10nFacadeTests.class, MessageFacadeTests.class, ResourceFacadeTests.class, ServiceCrudImplicit.class,
         ServiceFacadeTests.class, SubSelectTests.class, TransactionFacadeTests.class, UserFacadeTests.class,
-        SystemScreenRenderTests.class, ToolsRestApiTests.class, ToolsScreenRenderTests.class])
+        SystemScreenRenderTests.class, ToolsRestApiTests.class, ToolsScreenRenderTests.class,
+        ScreenRenderImplPathRewriteTests.class])
 class MoquiSuite {
     @AfterAll
     static void destroyMoqui() {

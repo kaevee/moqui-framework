@@ -80,15 +80,15 @@ Example:
 </template>
 ```
 
-### 3) Add qvue component content
+### 3) Add qvue2 component content
 
-A typical pattern is a screen with qvue output:
+A typical pattern is a screen with qvue2 output:
 
 ```xml
-<screen render-modes="vue,qvue" server-static="vue,qvue">
+<screen render-modes="vue,qvue2" server-static="vue,qvue2">
   <widgets>
     <render-mode>
-      <text type="qvue"><![CDATA[
+      <text type="qvue2"><![CDATA[
         <template><q-btn label="Run" @click="run"/></template>
         <script>
         module.exports = {
@@ -102,6 +102,8 @@ A typical pattern is a screen with qvue output:
   </widgets>
 </screen>
 ```
+
+If you are migrating older screens, legacy aliases (`qvue`, `qjs`, `qvt`) are still supported by the qvt2 loader.
 
 ## Using Pinia (moqui.store)
 
